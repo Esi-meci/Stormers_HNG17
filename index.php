@@ -1,37 +1,92 @@
 <?php
-// $file = 'echo.php';
-
-// if (file_exists($file)) {
-//     $file = dirname(__DIR__) . '/test/' . $file;
-//     shell_exec("node " . $file);
-// }
-
-// $output = shell_exec('ls');
-
-// $output = explode(" ", $output);
-
-// var_dump($output);
-// $file = dirname(__DIR__) . '/test/' . $file;
-
-// include 'script.js';
-
-// error_reporting(E_ALL);
-// ini_set('display_errors', 1);
-
-// $read = exec("node script.js");
-
-// echo $read;
 $log_directory = dirname(__FILE__);
-$files = [];
+// $files = [];
+$path = $log_directory . '\scripts\*.*';
 
-foreach (glob($log_directory . '/*.*') as $file) {
-    $files[] = $file;
-}
+$output = array();
+$res = array();
+$fullnameRegex = "/\sis\s(.*)\swith\semail/";
+$idRegex = "/\sID\s(.*)\susing/";
+$languageRegex = "/\susing\s(.*)\sfor/";
+$emailRegex = "/\semail\s(.*)\swith/";
+$generalRegex = "/\Hello World, this is (.*) with email (.*) with HNGi7 ID (.*) using (.*) for stage 2 task/";
 
-foreach ($files as $file) {
-    $ext = pathinfo($file, PATHINFO_EXTENSION);
-    if ($ext === 'js') {
-        $read = exec("node {$file}");
-        echo $read . "\n";
+foreach (glob($path) as $key => $file) {
+    $new = array();
+    if (pathinfo($file)['extension'] == 'js') {
+        exec("node $file", $output);
+    } else if (pathinfo($file)['extension'] == 'py') {
+        exec("python $file", $output);
+    } else if (pathinfo($file)['extension'] == 'dart') {
+        exec("dart $file", $output);
+    } else if (pathinfo($file)['extension'] == 'php') {
+        exec("php $file", $output);
     }
+    $new['output'] = $output[$key];
+
+    //check status
+    if (preg_match("$generalRegex", $new['output'])) {
+        $new['status'] = 'Passed';
+    } else {
+        $new['status'] = 'Failed';
+    }
+
+    //get fullname
+    if (preg_match("$fullnameRegex", $output[$key], $matches1)) {
+        $new['full name'] = $matches1[1];
+    }
+
+    //get hng id
+    if (preg_match("$idRegex", $output[$key], $matches1)) {
+        $new['ID'] = $matches1[1];
+    }
+
+    //get langugae
+    if (preg_match("$languageRegex", $output[$key], $matches1)) {
+        $new['language'] = $matches1[1];
+    }
+
+    //get email 
+    if (preg_match("$emailRegex", $output[$key], $matches1)) {
+        $new['email'] = $matches1[1];
+    }
+
+    array_push($res, $new);
 }
+
+$final_res = json_encode($res, true);
+
+
+if (isset($_GET["json"])) {
+    // $content = json_encode($content);
+    echo $final_res;
+    exit;
+} else {
+    var_dump($res);
+
+    ob_flush(); //flusing the output stream
+}
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team Storm</title>
+</head>
+
+<body>
+    <h1>Team Storm</h1>
+    <?php foreach ($res as $data) : ?>
+        <?php if (isset($data['error'])) : ?>
+            <p><?= "error" ?></p>
+        <?php else : ?>
+            <p><?= $data['output'] ?></?>
+            <?php endif; ?>
+        <?php endforeach; ?>
+
+</body>
+
+</html>
