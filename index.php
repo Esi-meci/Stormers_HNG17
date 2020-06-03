@@ -31,9 +31,12 @@ foreach (glob($path) as $key => $file) {
         $new['status'] = 'Failed';
     }
 
+    //get file
+    $new['file'] = pathinfo($file)['basename'];
+
     //get fullname
     if (preg_match("$fullnameRegex", $output[$key], $matches1)) {
-        $new['full name'] = $matches1[1];
+        $new['name'] = $matches1[1];
     }
 
     //get hng id
@@ -64,7 +67,8 @@ if (isset($_GET["json"])) {
 } else {
     var_dump($res);
 
-    ob_flush(); //flusing the output stream
+    ob_flush();
+    $exit; //flusing the output stream
 }
 ?>
 
