@@ -1,6 +1,6 @@
 <?php
 $log_directory = dirname(__FILE__);
-// $files = [];
+$files = scandir("scripts/");
 $path = $log_directory . '\scripts\*.*';
 
 $output = array();
@@ -11,8 +11,9 @@ $languageRegex = "/\susing\s(.*)\sfor/";
 $emailRegex = "/\semail\s(.*)\swith/";
 $generalRegex = "/\Hello World, this is (.*) with email (.*) with HNGi7 ID (.*) using (.*) for stage 2 task/";
 
-foreach (glob($path) as $key => $file) {
+foreach (glob("scripts\*.*") as $key => $file) {
     $new = array();
+    var_dump($file);
     if (pathinfo($file)['extension'] == 'js') {
         exec("node $file", $output);
     } else if (pathinfo($file)['extension'] == 'py') {
@@ -66,23 +67,17 @@ if (isset($_GET["json"])) {
     exit;
 } else {
     // var_dump($res);
-
-    // ob_flush();
-    $exit; //flusing the output stream
-}
 ?>
+    <!DOCTYPE html>
+    <html lang="en">
 
-<!DOCTYPE html>
-<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Team Storm</title>
+    </head>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Team Storm</title>
-</head>
-
-<body>
-    <?php if (!isset($_GET["json"])) { ?>
+    <body>
         <h1>Team Storm</h1>
         <?php foreach ($res as $data) : ?>
             <?php if (isset($data['error'])) : ?>
@@ -91,8 +86,11 @@ if (isset($_GET["json"])) {
                 <p><?= $data['output'] ?></?>
                 <?php endif; ?>
             <?php endforeach; ?>
-        <?php } ?>
 
-</body>
+    </body>
 
-</html>
+    </html>
+<?php
+}
+
+?>
