@@ -62,12 +62,12 @@ $final_res = json_encode($res, true);
 
 if (isset($_GET["json"])) {
     // $content = json_encode($content);
-    echo $final_res;
+    var_dump($final_res);
     exit;
 } else {
-    var_dump($res);
+    // var_dump($res);
 
-    ob_flush();
+    // ob_flush();
     $exit; //flusing the output stream
 }
 ?>
@@ -82,14 +82,16 @@ if (isset($_GET["json"])) {
 </head>
 
 <body>
-    <h1>Team Storm</h1>
-    <?php foreach ($res as $data) : ?>
-        <?php if (isset($data['error'])) : ?>
-            <p><?= "error" ?></p>
-        <?php else : ?>
-            <p><?= $data['output'] ?></?>
-            <?php endif; ?>
-        <?php endforeach; ?>
+    <?php if (!isset($_GET["json"])) { ?>
+        <h1>Team Storm</h1>
+        <?php foreach ($res as $data) : ?>
+            <?php if (isset($data['error'])) : ?>
+                <p><?= "error" ?></p>
+            <?php else : ?>
+                <p><?= $data['output'] ?></?>
+                <?php endif; ?>
+            <?php endforeach; ?>
+        <?php } ?>
 
 </body>
 
