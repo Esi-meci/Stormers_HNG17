@@ -6,9 +6,11 @@ $path = $log_directory . '\scripts\*.*';
 $output = array();
 $res = array();
 $final_res = array();
-$fullnameRegex = "/\sis\s(.*)\swith/";
+$fullnameRegex = "/\sis\s(.*)\swith\semail/";
 $idRegex = "/\sID\s(.*)\susing/";
 $languageRegex = "/\susing\s(.*)\sfor/";
+$emailRegex = "/\semail\s(.*)\swith/";
+$generalRegex = "/\Hello World, this is (.*) with email (.*) with HNGi7 ID (.*) using (.*) for stage 2 task/";
 
 foreach (glob($path) as $key => $file) {
     $new = array();
@@ -21,7 +23,13 @@ foreach (glob($path) as $key => $file) {
     } else if (pathinfo($file)['extension'] == 'php') {
         exec("php $file", $output);
     }
+    $new['output'] = $output[$key];
 
+    if (preg_match("$generalRegex", $new['output'])) {
+        $new['status'] = 'Passed';
+    } else {
+        $new['status'] = 'Failed';
+    }
     if (preg_match("$fullnameRegex", $output[$key], $matches1)) {
         $new['full name'] = $matches1[1];
     }
@@ -30,6 +38,9 @@ foreach (glob($path) as $key => $file) {
     }
     if (preg_match("$languageRegex", $output[$key], $matches1)) {
         $new['language'] = $matches1[1];
+    }
+    if (preg_match("$emailRegex", $output[$key], $matches1)) {
+        $new['email'] = $matches1[1];
     }
 
     array_push($res, $new);
