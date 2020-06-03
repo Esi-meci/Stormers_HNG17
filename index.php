@@ -11,6 +11,7 @@ $languageRegex = "/\susing\s(.*)\sfor/";
 $emailRegex = "/\semail\s(.*)\swith/";
 $generalRegex = "/\Hello World, this is (.*) with email (.*) with HNGi7 ID (.*) using (.*) for stage 2 task/";
 
+//using scripts instead
 foreach (glob("scripts\*.*") as $key => $file) {
     $new = array();
     var_dump($file);
